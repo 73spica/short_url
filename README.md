@@ -8,12 +8,6 @@
 - requests (2.18.4)
 - beautifulsoup4 (4.6.0)
 
-# Usage
-```
-$ source ./work-env/bin/activate
-$ python ~~~.py
-```
-
 # Setup
 ```
 $ python -m venv work-env
@@ -23,4 +17,10 @@ $ pip install beautifulsoup4
 $ pip install lxml
 
 $ deactivate
+```
+
+# Usage
+```
+$ source ./work-env/bin/activate
+$ python ~~~.py
 ```
