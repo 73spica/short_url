@@ -4,7 +4,6 @@ import re
 import json
 from itertools import product
 import string
-from tqdm import tqdm
 from time import sleep
 
 # Bitly My Page
