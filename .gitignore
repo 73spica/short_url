@@ -1,2 +1,2 @@
 # venvの環境はgit管理から外す
-script/work-env/
+scripts/work-env/
