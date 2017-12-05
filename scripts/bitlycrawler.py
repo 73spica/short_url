@@ -12,10 +12,10 @@ from time import sleep
 #    - http://bit.ly/2AaaPsX
 #    -> http://bit.ly/2AaaPsX+
 
-# In Bitly, the method for crawling is two.
+# In Bitly, the method for crawling is three.
 # i) Analytics Page Access
 # ii) Using API
-# iii) Auto brawsing.
+# iii) Auto brawsing
 
 class CrawlerVerAPI:
     BASE_API_URL = "https://api-ssl.bitly.com"
