@@ -1,2 +1,4 @@
 # venvの環境はgit管理から外す
 scripts/work-env/
+scripts/__pycache__/
+scripts/apikey.py
