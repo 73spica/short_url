@@ -1,3 +1,7 @@
+"""
+短縮URLクローリングモジュール
+"""
+
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -18,6 +22,8 @@ from time import sleep
 # iii) Auto brawsing
 
 class CrawlerVerMaint:
+    """tinyurlのクローリングのためのクラス"""
+
     BASE_MAINT_URL = "https://preview.tinyurl.com/"
     
     def __init__(self):
@@ -25,19 +31,15 @@ class CrawlerVerMaint:
 
     @staticmethod
     def get_page(target_url):
+        """引数のURLへGetした結果を返す関数"""
         r = requests.get(target_url)
         return r.text
 
     @staticmethod
     def get_link_info(short_url, redo=5):
-        url = short_url + "+"
-        # redo回までに目的のデータが取れればreturnで帰る
-        for i in range(redo):
-            try:
-                r = requests.get(url)
-                soup = BeautifulSoup(r.text, 'lxml')
-        # ここに来てたら，該当のJSコードがなかったということ
-        return None
+        """短縮URLの情報を取得し整形して返す関数"""
+        pass
+        
 
 def main():
     bitly_api_key = "c7e7f54b82da0a00900f776d5e1c2bf6308b2427"
@@ -49,7 +51,10 @@ def main():
     ex_url = "https://tinyurl.com/6rmuv"
     short_hash = "6rmuv"
     ex_maint_url = "https://preview.tinyurl.com/6rmuv"
+    help(CrawlerVerMaint)
+    return
 
+    print(CrawlerVerMaint.get_page(ex_maint_url))
 
     return
 
