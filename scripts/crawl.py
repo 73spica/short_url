@@ -8,14 +8,14 @@ import traceback
 import time
 
 def main():
-    bitly_apikey = apikey.bitly_apikey
+    bitly_apikey = apikey.bitly_apikey["vernal"]
     base_target_url = "https://bitly.com/"
     target_url = "http://73spica.tech/blog/"
     target_url = "https://bit.ly/2AaaPsX"
     target_url = "https://bitly.com/b4yqKg"
     target_url = "https://bitly.com/a"
 
-    f = open("one-test2.txt","w")
+    f = open("output/one-test.txt","w")
 
     for i in range(3000):
         bf = True
@@ -32,6 +32,7 @@ def main():
             except:
                 f.write("Error.\n")
                 time.sleep(5)
+        break
         time.sleep(5)
     return
 
