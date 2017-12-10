@@ -27,7 +27,7 @@ class CrawlerVerAPI:
         shortener_path = "/v3/shorten"
         shortener_query = "?access_token={}&longUrl={}".format(api_key, long_url)
         api_url = cls.BASE_API_URL + shortener_path + shortener_query
-        r = requests.get(api_url)
+        r = requests.get(api_url, timeout=0.1)
         return r.text
 
     @classmethod
@@ -35,7 +35,7 @@ class CrawlerVerAPI:
         shortener_path = "/v3/link/info"
         shortener_query = "?access_token={}&link={}".format(api_key, short_url)
         api_url = cls.BASE_API_URL + shortener_path + shortener_query
-        r = requests.get(api_url)
+        r = requests.get(api_url, timeout=0.1)
         return r.text
 
 class CrawlerVerMaint:
@@ -45,29 +45,38 @@ class CrawlerVerMaint:
         pass
 
     @staticmethod
-    def get_link_info(short_url):
+    def get_link_info(short_url, redo=5):
         url = short_url + "+"
-        try:
-            r = requests.get(url)
-        except requests.exceptions.ConnectionError as err:
-            print("ConnectionError:", err)
-        except:
-            print("Unexpected error:", sys.exc_info()[0])
-        soup = BeautifulSoup(r.text, 'lxml')
-        r = re.compile("{.+}")
-        for tag in soup.find_all("script", attrs={"type": "text/javascript"}):
-            jscode = tag.text
-            if jscode != "":
-                # 今回は数も少ないしどうせリストにするのでfindall使おうかしら
-                #for m in r.finditer(jscode):
-                #    print(m.group())
-                results = r.findall(jscode)
-                ret = {}
-                ret["base_info"] = json.loads(results[0])
-                ret["click"] = json.loads(results[1])
-                ret["user_info"] = json.loads(results[2])
-                ret["others"] = json.loads(results[3])
-                return ret
+        # redo回までに目的のデータが取れればreturnで帰る
+        for i in range(redo):
+            try:
+                r = requests.get(url, timeout=1)
+                soup = BeautifulSoup(r.text, 'lxml')
+                r = re.compile("{.+}")
+                for tag in soup.find_all("script", attrs={"type": "text/javascript"}):
+                    jscode = tag.text
+                    if "long_url_no" in jscode:
+                    #if jscode != "": # これだとgetTimeとかいうのが入った時に取れない
+                        # 今回は数も少ないしどうせリストにするのでfindall使おうかしら
+                        #for m in r.finditer(jscode):
+                        #    print(m.group())
+                        return jscode
+                        results = r.findall(jscode) # TODO: この条件で取れてない可能性
+                        ret = {}
+                        ret["base_info"] = json.loads(results[0])
+                        ret["click"] = json.loads(results[1])
+                        ret["user_info"] = json.loads(results[2])
+                        ret["others"] = json.loads(results[3])
+                        return ret
+            except requests.exceptions.ConnectionError as err:
+                print("ConnectionError:", err)
+                raise err
+            except Exception as e:
+                print("Unexpected error:", sys.exc_info()[0])
+                raise e
+            #sleep(1)
+        # ここに来てたら，該当のJSコードがなかったということ
+        return None
 
 def main():
     bitly_api_key = "c7e7f54b82da0a00900f776d5e1c2bf6308b2427"
