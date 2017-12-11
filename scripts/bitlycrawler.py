@@ -6,37 +6,69 @@ from itertools import product
 import string
 from time import sleep
 
-# Bitly My Page
-#  - https://app.bitly.com/Bhbr4V3UGjq/bitlinks/2AaaPsX
-# In Bitly, We can access an analytics page by adding "+" the target shortener URL.
-#    - http://bit.ly/2AaaPsX
-#    -> http://bit.ly/2AaaPsX+
+"""
+Bitly My Page
+ - https://app.bitly.com/Bhbr4V3UGjq/bitlinks/2AaaPsX
+In Bitly, We can access an analytics page by adding "+" the target shortener URL.
+   - http://bit.ly/2AaaPsX
+   -> http://bit.ly/2AaaPsX+
 
-# In Bitly, the method for crawling is three.
-# i) Analytics Page Access
-# ii) Using API
-# iii) Auto brawsing
+In Bitly, the method for crawling is three.
+i) Analytics Page Access
+ii) Using API
+iii) Auto brawsing
+"""
 
 class CrawlerVerAPI:
-    BASE_API_URL = "https://api-ssl.bitly.com"
+    """bit.lyのクローリングのためのクラス"""
+
+    BASE_API_DOMAIN = "https://api-ssl.bitly.com"
+    BASE_BITLY_DOMAIN = "https://bit.ly/"
+    BASE_JMP_DOMAIN = "http://j.mp/"
+    """
+        BASE_API_DOMAIN  : APIのためのURL
+        BASE_BITLY_DOMAIN: bit.lyの短縮URLのドメイン
+        BASE_JMP_DOMAIN  : j.mpの短縮URLのドメイン 
+    """
+
     def __init__(self):
         pass
 
     @classmethod
     def do_shortener(cls, api_key, long_url):
+        """
+            APIキーとLongURLを渡すと短縮URLを生成しそのURLを返す
+        """
         shortener_path = "/v3/shorten"
         shortener_query = "?access_token={}&longUrl={}".format(api_key, long_url)
-        api_url = cls.BASE_API_URL + shortener_path + shortener_query
-        r = requests.get(api_url, timeout=0.1)
+        api_url = cls.BASE_API_DOMAIN + shortener_path + shortener_query
+        r = requests.get(api_url, timeout=2)
         return r.text
 
     @classmethod
-    def get_link_info(cls, api_key, short_url):
+    def get_link_info(cls, api_key, short_url, target="b"):
+        """
+            APIキーと短縮URLを指定するとそのリンク先の情報を返す
+        """
+        target_domain = ""
+        if target == "b":
+            target_domain = cls.BASE_BITLY_DOMAIN
+        elif target == "j":
+            target_domain = cls.BASE_JMP_DOMAIN
+        else:
+            print("Invalid target.")
+            return
         shortener_path = "/v3/link/info"
+        if not short_url.startswith(target_domain):
+            short_url = target_domain + short_url
         shortener_query = "?access_token={}&link={}".format(api_key, short_url)
-        api_url = cls.BASE_API_URL + shortener_path + shortener_query
-        r = requests.get(api_url, timeout=0.1)
+        api_url = cls.BASE_API_DOMAIN + shortener_path + shortener_query
+        r = requests.get(api_url, timeout=2)
         return r.text
+
+    @classmethod
+    def api_limit_test(cls, api_key, short_url):
+        pass
 
 class CrawlerVerMaint:
     BASE_API_URL = "https://api-ssl.bitly.com"
@@ -78,28 +110,3 @@ class CrawlerVerMaint:
         # ここに来てたら，該当のJSコードがなかったということ
         return None
 
-def main():
-    bitly_api_key = "c7e7f54b82da0a00900f776d5e1c2bf6308b2427"
-    base_target_url = "https://bitly.com/"
-    target_url = "http://73spica.tech/blog/"
-    target_url = "https://bit.ly/2AaaPsX"
-    target_url = "https://bitly.com/b4yqKg"
-    target_url = "https://bitly.com/a"
-
-    f = open("short-long.txt","w")
-    chrs = string.ascii_letters + string.digits
-    #for i,x in enumerate(product(chrs, repeat=2)):
-    for x in product(chrs, repeat=2):
-        short_hash = "".join(x)
-        print(short_hash)
-        target_url = base_target_url + short_hash
-        info = CrawlerVerMaint.get_link_info(target_url)
-        out = "%s | %s\n"%(short_hash,info["base_info"]["long_url"])
-        f.write(out)
-        break
-    f.close()
-    return
-    print( CrawlerVerAPI.get_link_info(bitly_api_key, target_url) )
-
-if __name__ == "__main__":
-    main()
